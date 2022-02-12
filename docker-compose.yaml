@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+    container_name: redis
+    networks:
+      - main
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - main
+  client:
+    build: ./client
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+    networks:
+      - main
+    container_name: client
+  server:
+    build: ./
+    ports:
+      - 4000:4000
+    networks:
+      - main
+    container_name: server
+
+volumes:
+  cache:
+    driver: local
+networks:
+  main:
+    driver: bridge

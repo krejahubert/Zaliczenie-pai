@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
+
+		<!-- Bootstrap CSS -->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+
+		<title>Vote App</title>
+	</head>
+
+	<body>
+		<nav class="navbar navbar-light bg-light">
+			<a class="navbar-brand" href="#">Result App</a>
+		</nav>
+		<div class="row mt-5 pt-5">
+			<div class="col-md-4 offset-md-4">
+				<div class="card">
+					<div class="card-header text-center"> Results </div>
+					<ul class="list-group list-group-flush">
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center"
+						>
+							Cat
+							<span id="cat_vote_count" class="badge badge-primary badge-pill"
+								>0</span
+							>
+						</li>
+						<li
+							class="list-group-item d-flex justify-content-between align-items-center"
+						>
+							Dog
+							<span id="dog_vote_count" class="badge badge-primary badge-pill"
+								>0</span
+							>
+						</li>
+					</ul>
+				</div>
+				<div class="card-footer text-muted">
+					<!-- <strong><span id="winning_message"></span></strong> -->
+				</div>
+				<div class="card">
+					<div class="card-header text-center"> Vote </div>
+					<div class="row">
+						<div class="col-md-6">
+							<button id="dogs" type="button" class="btn btn-outline-primary"
+								>Dogs</button
+							>
+						</div>
+						<div class="col-md-6">
+							<button id="cats" type="button" class="btn btn-outline-danger"
+								>Cats</button
+							>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<button
+								id="reset"
+								type="button"
+								class="btn btn-outline-warning btn-block"
+								>Reset</button
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script
+			src="https://code.jquery.com/jquery-3.4.1.min.js"
+			integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			crossorigin="anonymous"
+		></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+			integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+			crossorigin="anonymous"
+		></script>
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+			integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+			crossorigin="anonymous"
+		></script>
+		<script type="text/javascript">
+			$(() => {
+				let cat_vote_count = 0;
+				let dog_vote_count = 0;
+
+				$(document).ready(function () {
+					$.ajax({
+						url: 'http://localhost:4000/load',
+						success: function (data, status) {
+							cat_vote_count = data[0] || 0;
+							dog_vote_count = data[1] || 0;
+							$('#cat_vote_count').text(cat_vote_count);
+							$('#dog_vote_count').text(dog_vote_count);
+						},
+					});
+				});
+
+				$('#cats').click(function () {
+					$.ajax({
+						url: 'http://localhost:4000/vote/CAT',
+						success: function (data, status) {
+							console.log('received success from server fro CAT ', data);
+							if (data !== '') {
+								cat_vote_count = data;
+								$('#cat_vote_count').text(data);
+							}
+						},
+					});
+				});
+				$('#dogs').click(function () {
+					$.ajax({
+						url: 'http://localhost:4000/vote/DOG',
+						success: function (data, status) {
+							console.log('received success from server fro GDOG ', data);
+							if (data !== '') {
+								dog_vote_count = data;
+								$('#dog_vote_count').text(data);
+							}
+						},
+					});
+				});
+
+				$('#reset').click(function () {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:4000/reset',
+						success: function (data, status) {
+							console.log('rreset ', data);
+
+							cat_vote_count = 0;
+							dog_vote_count = 0;
+							$('#dog_vote_count').text(0);
+							$('#cat_vote_count').text(0);
+						},
+					});
+				});
+			});
+		</script>
+	</body>
+</html>
